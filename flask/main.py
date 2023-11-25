@@ -40,5 +40,3 @@ def store_score():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-# http://localhost:5000/store
