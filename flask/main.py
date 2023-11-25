@@ -40,4 +40,4 @@ def store_score():
 if __name__ == "__main__":
     port = getenv('PORT')
 
-    app.run(debug=bool(port), port=port if port else 5000)
+    app.run(host="0.0.0.0", debug=bool(port), port=port if port else 5000)
