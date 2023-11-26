@@ -1,4 +1,14 @@
 (function() {
+	document.body.style.backgroundColor = "black";
+	document.body.style.color = "white";
+	document.getElementsByClassName("banner")[0].style.backgroundColor = "#333";
+	document.querySelectorAll('a').forEach(function(a) {
+	    a.style.color = "white";
+	});
+	document.querySelectorAll('input').forEach(function(a) {
+	    a.style.color = "white";
+	    a.style.backgroundColor = "#111";
+	});
 	window.save = 0;
 	setInterval(function(){
 		// console.log("THIS STARTED");
@@ -34,5 +44,6 @@
 			window.save = 1;
 		}
 
+		document.body.style.backgroundColor = "black";
 	}, 300);
 })();
