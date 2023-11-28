@@ -25,7 +25,7 @@ def after_request(response):
     return response
 
 
-@app.route("/store", methods=["POST", "OPTIONS"])
+@app.route("/final-score", methods=["POST", "OPTIONS"])
 def store_score():
     if request.method == "OPTIONS":
         return ""
