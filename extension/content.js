@@ -13,37 +13,35 @@
   document.querySelectorAll(".start > *").forEach(function (child) {
     child.style.fontSize = "64px";
   });
-  var audio = new Audio();
-  audio.src =
-    "https://soundboardguy.com/wp-content/uploads/2022/05/moan-By-Tuna.mp3";
-
   // Callback function to execute when mutations are observed
+  var times = [];
+  var lastCallbackTime = Date.now();
+
   var callback = function (mutationsList, observer) {
     for (var mutation of mutationsList) {
       if (mutation.type == "childList") {
-        // Reset audio to start and play
-        audio.currentTime = 0;
-        audio.play();
+        var currentTime = Date.now();
+        var timeSinceLastCallback = currentTime - lastCallbackTime;
+        lastCallbackTime = currentTime;
+
+        times.push({
+          problem: document.querySelector(".problem").textContent,
+          time: timeSinceLastCallback,
+        });
       }
     }
   };
 
-  // Create an observer instance linked to the callback function
   var observer = new MutationObserver(callback);
-
-  // Options for the observer (which mutations to observe)
   var config = { childList: true, subtree: true };
-
-  // Select the target node
   var target = document.querySelector(".problem");
 
-  // Check if there's a target node to avoid errors
   if (target) {
-    // Start observing the target node for configured mutations
     observer.observe(target, config);
   } else {
     console.log("Target element not found");
   }
+
   window.save = 0;
   setInterval(function () {
     // console.log("THIS STARTED");
@@ -70,7 +68,8 @@
           console.log(xhr.responseText);
         }
       };
-      var data = JSON.stringify({ score: score });
+      var editedTimes = times.filter((_, index) => index % 2 === 0);
+      var data = JSON.stringify({ score, times: editedTimes });
       xhr.send(data);
       console.log("GAME COMPLETED");
       console.log("Score: ", score);
