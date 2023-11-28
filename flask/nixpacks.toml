@@ -1,2 +1,2 @@
 [phases.setup]
-nixPkgs = ["...", "default-libmysqlclient-dev", "pkg-config"]
+nixPkgs = ["...", "mysql-devel", "pkg-config"]
