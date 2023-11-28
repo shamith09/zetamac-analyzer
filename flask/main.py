@@ -1,14 +1,24 @@
 from flask import Flask, request
 from os import getenv
+from dotenv import load_dotenv
 from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
 
-import csv
+import mysql.connector
+
+load_dotenv()
 
 app = Flask(__name__)
 app.config["CORS_HEADERS"] = "Content-Type"
 
+db_connection = mysql.connector.connect(
+    host=getenv("MYSQLHOST"),
+    user=getenv("MYSQLUSER"),
+    password=getenv("MYSQLPASSWORD"),
+    database=getenv("MYSQLDATABASE"),
+    port=getenv("MYSQLPORT"),
+)
 
 @app.after_request
 def after_request(response):
@@ -37,14 +47,16 @@ def store_score():
     times = data.get("times")
     id = str(uuid4())
 
-    with open(Path(__file__).resolve().parent / "scores.csv", "a", newline="") as file:
-        writer = csv.writer(file)
-        writer.writerow([id, score])
+    query = "INSERT INTO scores (score) VALUES (%s, %s)"
+    values = score
+    cursor.execute(query, values)
+    inserted_id = cursor.lastrowid
 
-    with open(Path(__file__).resolve().parent / "times.csv", "a", newline="") as file:
-        writer = csv.writer(file)
-        for time in times:
-            writer.writerow([id, time["problem"], time["time"]])
+    # Assuming 'times' is a list of dictionaries with keys 'problem' and 'times'
+    data = [(inserted_id, obj["problem"], obj["times"]) for obj in times]
+
+    query = "INSERT INTO times (id, problem, time) VALUES (%s, %s, %s)"
+    cursor.executemany(query, data)
 
     return "Score stored successfully"
 
