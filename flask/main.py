@@ -55,7 +55,7 @@ def store_score():
 
         data = [(inserted_id, obj["problem"], obj["time"]) for obj in times]
 
-        query = "INSERT INTO times (id, problem, time) VALUES (%s::uuid, %s, %s)"
+        query = "INSERT INTO times (id, problem, time) VALUES (%s, %s, %s)"
         cursor.executemany(query, data)
         db_connection.commit()
     except psycopg2.DatabaseError as e:
