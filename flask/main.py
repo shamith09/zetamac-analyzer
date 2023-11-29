@@ -47,18 +47,24 @@ def store_score():
     id = str(uuid4())
 
     cursor = db_connection.cursor()
-    query = "INSERT INTO scores (score) VALUES (%s)"
-    values = (score,)
-    cursor.execute(query, values)
-    inserted_id = cursor.fetchone()[0]
+    try:
+        query = "INSERT INTO scores (score) VALUES (%s) RETURNING id"
+        values = (score,)
+        cursor.execute(query, values)
+        inserted_id = cursor.fetchone()[0]
 
-    # Assuming 'times' is a list of dictionaries with keys 'problem' and 'times'
-    data = [(inserted_id, obj["problem"], obj["times"]) for obj in times]
+        data = [(inserted_id, obj["problem"], obj["times"]) for obj in times]
 
-    query = "INSERT INTO times (id, problem, time) VALUES (%s, %s, %s)"
-    cursor.executemany(query, data)
-    db_connection.commit()
-    cursor.close()
+        query = "INSERT INTO times (id, problem, time) VALUES (%s, %s, %s)"
+        cursor.executemany(query, data)
+        db_connection.commit()
+    except psycopg2.DatabaseError as e:
+        if db_connection:
+            db_connection.rollback()
+        raise e
+    finally:
+        if cursor:
+            cursor.close()
 
     return "Score stored successfully"
 
