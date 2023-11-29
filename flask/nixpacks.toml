@@ -1,2 +1,2 @@
 [phases.setup]
-nixPkgs = ["...", "build-essential", libmysqlclient", "pkg-config"]
+nixPkgs = ["...", "build-essential", "libmysqlclient", "pkg-config"]
