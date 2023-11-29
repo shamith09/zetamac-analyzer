@@ -4,20 +4,19 @@ from dotenv import load_dotenv
 from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
-
-import mysql.connector
+import psycopg2
 
 load_dotenv()
 
 app = Flask(__name__)
 app.config["CORS_HEADERS"] = "Content-Type"
 
-db_connection = mysql.connector.connect(
-    host=getenv("MYSQLHOST"),
-    user=getenv("MYSQLUSER"),
-    password=getenv("MYSQLPASSWORD"),
-    database=getenv("MYSQLDATABASE"),
-    port=getenv("MYSQLPORT"),
+db_connection = psycopg2.connect(
+    dbname=getenv("PGDATABASE"),
+    user=getenv("PGUSER"),
+    password=getenv("PGPASSWORD"),
+    host=getenv("PGHOST"),
+    port=getenv("PGPORT"),
 )
 
 @app.after_request
@@ -47,16 +46,19 @@ def store_score():
     times = data.get("times")
     id = str(uuid4())
 
-    query = "INSERT INTO scores (score) VALUES (%s, %s)"
-    values = score
+    cursor = db_connection.cursor()
+    query = "INSERT INTO scores (score) VALUES (%s)"
+    values = (score,)
     cursor.execute(query, values)
-    inserted_id = cursor.lastrowid
+    inserted_id = cursor.fetchone()[0]
 
     # Assuming 'times' is a list of dictionaries with keys 'problem' and 'times'
     data = [(inserted_id, obj["problem"], obj["times"]) for obj in times]
 
     query = "INSERT INTO times (id, problem, time) VALUES (%s, %s, %s)"
     cursor.executemany(query, data)
+    db_connection.commit()
+    cursor.close()
 
     return "Score stored successfully"
 
