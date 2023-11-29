@@ -51,6 +51,7 @@ def store_score():
         query = "INSERT INTO scores (score) VALUES (%s) RETURNING id"
         values = (score,)
         cursor.execute(query, values)
+        inserted_id = cursor.fetchone()[0]
 
         data = [(inserted_id, obj["problem"], obj["time"]) for obj in times]
 
