@@ -18,6 +18,23 @@ def get_db_connection():
         port=getenv("PGPORT"),
     )
 
+@app.after_request
+def after_request(response):
+    # cors
+    origin = "*"
+
+    response.headers.add(
+        "Access-Control-Allow-Origin",
+        origin,
+    )
+    response.headers.add(
+        "Access-Control-Allow-Headers", "Content-Type,Authorization,X-Requested-With"
+    )
+    response.headers.add("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS")
+    response.headers.add("Access-Control-Allow-Credentials", "true")
+
+    return response
+
 @app.route("/final-score", methods=["POST", "OPTIONS"])
 def store_score():
     if request.method == "OPTIONS":
