@@ -11,14 +11,6 @@ load_dotenv()
 app = Flask(__name__)
 app.config["CORS_HEADERS"] = "Content-Type"
 
-db_connection = psycopg2.connect(
-    dbname=getenv("PGDATABASE"),
-    user=getenv("PGUSER"),
-    password=getenv("PGPASSWORD"),
-    host=getenv("PGHOST"),
-    port=getenv("PGPORT"),
-)
-
 @app.after_request
 def after_request(response):
     # cors
@@ -45,6 +37,14 @@ def store_score():
     score = data.get("score")
     times = data.get("times")
     id = str(uuid4())
+
+    db_connection = psycopg2.connect(
+        dbname=getenv("PGDATABASE"),
+        user=getenv("PGUSER"),
+        password=getenv("PGPASSWORD"),
+        host=getenv("PGHOST"),
+        port=getenv("PGPORT"),
+    )
 
     cursor = db_connection.cursor()
     try:

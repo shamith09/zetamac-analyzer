@@ -3,6 +3,7 @@
   document.body.style.color = "white";
   document.getElementsByClassName("banner")[0].style.backgroundColor = "#333";
   document.getElementsByClassName("banner")[0].style.padding = "24px";
+  document.getElementsByClassName("banner")[0].style.marginTop = "560px";
   document.querySelectorAll("a").forEach(function (a) {
     a.style.color = "white";
   });
